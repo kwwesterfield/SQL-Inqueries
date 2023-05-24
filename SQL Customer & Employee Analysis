@@ -1,0 +1,72 @@
+--- Customers not in the USA
+Select customerid,Firstname,Lastname,Country From chinook.customers
+Where country <> 'USA';
+
+-- Customers located in Brazil
+Select customerid,Firstname,Lastname,Country From chinook.customers
+Where country = 'Brazil';
+
+--Invoices of customers who are from Brazil(customer's full name, Invoice ID, Date of the invoice, and billing country.)
+Select customerid,InvoiceID,Firstname, Lastname, Invoicedate, Billingcountry From chinook.customers cust
+INNER JOIN chinook.invoices inv
+ON cust.customerid= inv.customerid
+Where country = 'Brazil';
+
+--Employees who are Sales Agents.
+Select employeeid, Firstname, Lastname, Title From chinook.employees
+Where title = 'Sales Support Agent';
+
+--Find a unique/distinct list of billing countries
+Select DISTINCT BillingCountry From chinook.invoices
+GROUP BY Billingcountry;
+
+ -- Invoices associated with each sales agent(Sales Agent's full name)
+ 
+SELECT employeeid,FirstName,Lastname, customerid, cust.FirstName,cust.LastName,cust.SupportRepId From chinook.employees emp
+FULL JOIN chinook.customers cust
+ON emp.employeeid = cust.SupportRepid
+Where customerid <> 'NULL';
+
+-- Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers
+
+ 
+SELECT inv.customerid,emp.FirstName,emp.Lastname, cust.FirstName,cust.LastName, cust.country, inv.total From chinook.employees emp
+JOIN chinook.customers cust
+ON emp.employeeid = cust.SupportRepid
+JOIN chinook.invoices inv
+ON cust.customerid = inv.customerid
+Where cust.customerid <> 'NULL' 
+ORDER BY emp.firstname;
+
+
+--How many Invoices were there in 2009?
+SELECT COUNT(*) from chinook.invoices
+WHERE invoicedate like '%2009%'
+
+--What are the total sales for 2009?
+SELECT SUM(Total) from chinook.invoices
+WHERE invoicedate like '%2009%';
+
+--Purchased track name with each invoice line ID.
+SELECT invoiceid,Trackid, name From chinook.tracks tra
+JOIN chinook.invoice_items inv_i
+ON tra.trackid = inv_i.trackid;
+
+--Purchased track name AND artist name with each invoice line ID
+SELECT inv_i.invoiceid, tra.name AS Track, art.name AS Artist From chinook.tracks tra
+JOIN chinook.invoice_items inv_i
+ON tra.trackid = inv_i.trackid
+JOIN chinook.albums alb
+ON tra.albumid = alb.albumid
+JOIN chinook.artists art
+ON alb.artistid =art.artistid
+ORDER BY inv_i.invoiceid;
+
+--Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT tra.name AS TRACK , alb.title AS Album , mt.name AS Media_Type, gen.name AS Genre FROM chinook.tracks tra
+JOIN chinook.media_types mt
+ON tra.MediaTypeid = mt.MediaTypeId
+JOIN chinook.genres gen
+ON tra.genreid = gen.genreid
+JOIN chinook.albums alb
+ON tra.albumid = alb.albumid
